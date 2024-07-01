@@ -1,15 +1,25 @@
-// pages/_app.js
-import { ThemeProvider } from "@mui/material/styles";
-import theme from "@/pages/theme"; // Import a custom theme setup from a separate file
-import Header from "@/components/header";
-import "@/app/globals.css"
-function MyApp({ Component, pageProps }) {
+
+import React, { useState } from "react";
+import type { AppProps } from "next/app";
+import { AuthProvider } from "../contexts/AuthContext";
+import Header from "../components/header";
+import Sidebar from "../components/sidebar";
+import "../app/globals.css";
+
+const MyApp = ({ Component, pageProps }: AppProps) => {
+  const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);
+
+  const handleToggleSidebar = () => {
+    setSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <ThemeProvider theme={theme}>
-      <Header/>
+    <AuthProvider>
+      <Header onToggleSidebar={handleToggleSidebar} />
+      <Sidebar isOpen={isSidebarOpen} onClose={handleToggleSidebar} />
       <Component {...pageProps} />
-    </ThemeProvider>
+    </AuthProvider>
   );
-}
+};
 
 export default MyApp;

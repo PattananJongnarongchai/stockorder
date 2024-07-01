@@ -15,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header  />
+        <Header onToggleSidebar={function (): void {
+          throw new Error("Function not implemented.");
+        } }  />
         
         {children}
       </body>

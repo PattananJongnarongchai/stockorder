@@ -1,48 +1,51 @@
-"use client"
-// DrawerWithSidebar.tsx
-import React, { useState } from "react";
-import { Drawer, IconButton, Box } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import Sidebar from "../sidebar/index"; // ตรวจสอบว่า path ถูกต้อง
 
-const DrawerWithSidebar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+import * as React from "react";
+import ListSubheader from "@mui/material/ListSubheader";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Collapse from "@mui/material/Collapse";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
+import HistoryIcon from "@mui/icons-material/History";
 
-  const toggleDrawer =
-    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === "keydown" &&
-        ((event as React.KeyboardEvent).key === "Tab" ||
-          (event as React.KeyboardEvent).key === "Shift")
-      ) {
-        return;
-      }
-      setIsOpen(open);
-    };
+export default function DrawerWithSidebar() {
+  const [open, setOpen] = React.useState(true);
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
 
   return (
-    <div>
-      <IconButton
-        onClick={toggleDrawer(true)}
-        edge="start"
-        color="inherit"
-        aria-label="menu"
-      >
-        <MenuIcon />
-      </IconButton>
-      <Drawer
-        anchor="left"
-        open={isOpen}
-        onClose={toggleDrawer(false)}
-        sx={{ width: 240, flexShrink: 0 }}
-        ModalProps={{ keepMounted: true }} // Better open performance on mobile.
-      >
-        <Box sx={{ width: 240 }}>
-          <Sidebar />
-        </Box>
-      </Drawer>
-    </div>
+    <List
+      sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+      component="nav"
+      aria-labelledby="nested-list-subheader"
+      subheader={
+        <ListSubheader component="div" id="nested-list-subheader">
+          Stock Order System
+        </ListSubheader>
+      }
+    >
+      <ListItemButton href="/dashboard">
+        <ListItemIcon>
+          <DashboardIcon />
+        </ListItemIcon>
+        <ListItemText primary="Order Dashboard" />
+      </ListItemButton>
+      <ListItemButton href="/stock">
+        <ListItemIcon>
+          <Inventory2Icon />
+        </ListItemIcon>
+        <ListItemText primary="Order Stock" />
+      </ListItemButton>
+      <ListItemButton href="/history">
+        <ListItemIcon>
+          <HistoryIcon />
+        </ListItemIcon>
+        <ListItemText primary="Order History" />
+      </ListItemButton>
+    </List>
   );
-};
-
-export default DrawerWithSidebar;
+}

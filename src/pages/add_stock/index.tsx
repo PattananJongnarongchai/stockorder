@@ -1,146 +1,180 @@
-import React, { useState } from "react";
+// AddProduct.tsx
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Container,
   TextField,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Paper,
   Grid,
-  Box,
   Typography,
-  Checkbox,
+  Paper,
+  MenuItem,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 const AddButton = styled(Button)({
-  backgroundColor: "#1976d2", // This matches the color in your screenshot
+  backgroundColor: "#1976d2",
   color: "#ffffff",
   "&:hover": {
     backgroundColor: "#1565c0",
   },
 });
 
-const StockManagement = () => {
-  const [entries, setEntries] = useState([]);
+const AddProduct = () => {
   const [formData, setFormData] = useState({
-    date: "",
-    number: "",
-    items: "",
-    warehouse: "",
-    supplier: "",
-    bookedOn: "",
-    bookedBy: "",
-    sent: false,
+    date: new Date().toISOString().split("T")[0], // Default to current date
+    name: "",
+    price: "",
+    stock: "",
+    image: null,
+    category: "",
     description: "",
   });
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/categories")
+      .then((response) => setCategories(response.data))
+      .catch((error) => console.error("Error fetching categories:", error));
+  }, []);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
+    });
+  };
+
+  const handleFileChange = (e) => {
+    setFormData({
+      ...formData,
+      image: e.target.files[0],
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setEntries([...entries, formData]);
-    setFormData({
-      // Reset form
-      date: "",
-      number: "",
-      items: "",
-      warehouse: "",
-      supplier: "",
-      bookedOn: "",
-      bookedBy: "",
-      sent: false,
-      description: "",
-    });
+
+    const data = new FormData();
+    for (const key in formData) {
+      data.append(key, formData[key]);
+    }
+
+    axios
+      .post("http://localhost:3001/products", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        alert("Product added successfully");
+        setFormData({
+          date: new Date().toISOString().split("T")[0], // Reset to current date
+          name: "",
+          price: "",
+          stock: "",
+          image: null,
+          category: "",
+          description: "",
+        });
+      })
+      .catch((error) => {
+        console.error("There was an error adding the product!", error);
+      });
   };
 
   return (
     <Container maxWidth="lg">
       <Paper elevation={1} style={{ padding: "20px", marginTop: "20px" }}>
         <Typography variant="h6" gutterBottom>
-          Add Stock
+          Add Product
         </Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                label="Date"
                 type="date"
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
+                InputLabelProps={{ shrink: true }}
+                required
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Number"
+                label="Name"
                 type="text"
-                name="number"
-                value={formData.number}
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
+                required
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Items"
-                type="text"
-                name="items"
-                value={formData.items}
+                label="Price"
+                type="number"
+                name="price"
+                value={formData.price}
                 onChange={handleChange}
+                required
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Warehouse"
-                type="text"
-                name="warehouse"
-                value={formData.warehouse}
+                label="Stock"
+                type="number"
+                name="stock"
+                value={formData.stock}
                 onChange={handleChange}
+                required
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={6}>
+              <input
+                accept="image/jpeg"
+                style={{ display: "none" }}
+                id="image-upload"
+                type="file"
+                onChange={handleFileChange}
+              />
+              <label htmlFor="image-upload">
+                <Button variant="contained" component="span" fullWidth required>
+                  Upload Image
+                </Button>
+              </label>
+              {formData.image && (
+                <Typography variant="body2" color="textSecondary">
+                  {formData.image.name}
+                </Typography>
+              )}
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <TextField
+                select
                 fullWidth
-                label="Supplier"
-                type="text"
-                name="supplier"
-                value={formData.supplier}
+                label="Category"
+                name="category"
+                value={formData.category}
                 onChange={handleChange}
-              />
+                required
+              >
+                {categories.map((category) => (
+                  <MenuItem key={category.id} value={category.id}>
+                    {category.name}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                label="Booked On"
-                type="text"
-                name="bookedOn"
-                value={formData.bookedOn}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                label="Booked By"
-                type="text"
-                name="bookedBy"
-                value={formData.bookedBy}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Description"
@@ -148,63 +182,19 @@ const StockManagement = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
+                required
               />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <Box display="flex" alignItems="center">
-                <Checkbox
-                  checked={formData.sent}
-                  onChange={handleChange}
-                  name="sent"
-                  color="primary"
-                />
-                <Typography variant="body1">Sent</Typography>
-              </Box>
             </Grid>
             <Grid item xs={12}>
               <AddButton type="submit" fullWidth>
-                Add Entry
+                Add Product
               </AddButton>
             </Grid>
           </Grid>
         </form>
       </Paper>
-      <Paper elevation={1} style={{ marginTop: "20px", padding: "20px" }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell>Number</TableCell>
-              <TableCell>Items</TableCell>
-              <TableCell>Warehouse</TableCell>
-              <TableCell>Supplier</TableCell>
-              <TableCell>Booked On</TableCell>
-              <TableCell>Booked By</TableCell>
-              <TableCell>Sent</TableCell>
-              <TableCell>Description</TableCell>
-              
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {entries.map((entry, index) => (
-              <TableRow key={index}>
-                <TableCell>{entry.date}</TableCell>
-                <TableCell>{entry.number}</TableCell>
-                <TableCell>{entry.items}</TableCell>
-                <TableCell>{entry.warehouse}</TableCell>
-                <TableCell>{entry.supplier}</TableCell>
-                <TableCell>{entry.bookedOn}</TableCell>
-                <TableCell>{entry.bookedBy}</TableCell>
-                <TableCell>{entry.sent ? "Yes" : "No"}</TableCell>
-                <TableCell>{entry.description}</TableCell>
-                <TableCell> {/* Add action buttons here */}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Paper>
     </Container>
   );
 };
 
-export default StockManagement;
+export default AddProduct;

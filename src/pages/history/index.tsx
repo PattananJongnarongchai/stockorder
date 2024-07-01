@@ -1,117 +1,175 @@
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
+import axios from "axios";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { format } from "date-fns";
 import {
-  Container,
-  Grid,
-  Paper,
-  Typography,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
-  TableContainer,
+  Paper,
+  Pagination,
+  TextField,
+  Typography,
+  Box,
+  Button,
+  IconButton,
 } from "@mui/material";
-import {
-  LineChart,
-  Line,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { useRouter } from "next/router";
+import AuthContext from "../../contexts/AuthContext";
+import InfoIcon from "@mui/icons-material/Info";
 
-const data = [
-  { name: "Jan", uv: 400 },
-  { name: "Feb", uv: 300 },
-  { name: "Mar", uv: 200 },
-  { name: "Apr", uv: 278 },
-  { name: "May", uv: 189 },
-  { name: "Jun", uv: 239 },
-  { name: "Jul", uv: 349 },
-  { name: "Aug", uv: 200 },
-  { name: "Sep", uv: 278 },
-  { name: "Oct", uv: 189 },
-  { name: "Nov", uv: 239 },
-  { name: "Dec", uv: 349 },
-];
+interface Order {
+  id: number;
+  date: string;
+  total_price: number;
+  user_id: string;
+}
 
-const historyData = [
-  {
-    date: "2023-06-17 13:55",
-    number: "100026",
-    items: 1,
-    warehouse: "Store 1",
-    supplier: "USA Foods",
-    bookedOn: "2023-06-13 16:02",
-    bookedBy: "Anderson Jones",
-    sent: "Yes",
-    description: "Sample description",
-  },
-  // Add more data as needed
-];
+const OrderHistory: React.FC = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const { isAuthenticated, token } = useContext(AuthContext);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const router = useRouter();
 
-const HistoryPage = () => {
+  const fetchOrders = (start?: string, end?: string, page = 1) => {
+    if (isAuthenticated && token) {
+      axios
+        .get("http://localhost:3001/orders", {
+          params: {
+            startDate: start,
+            endDate: end,
+            // page,
+            limit: 10,
+          },
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          setOrders(response.data.orders);
+          setTotalPages(response.data.totalPages);
+        })
+        .catch((error) => {
+          console.error("Error fetching orders:", error);
+        });
+    }
+  };
+
+  useEffect(() => {
+    // Fetch initial data
+    fetchOrders();
+  }, [isAuthenticated, token]);
+
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    page: number
+  ) => {
+    setCurrentPage(page);
+    if (startDate && endDate) {
+      const formattedStart = format(startDate, "yyyy-MM-dd");
+      const formattedEnd = format(endDate, "yyyy-MM-dd");
+      fetchOrders(formattedStart, formattedEnd, page);
+    } else {
+      fetchOrders(undefined, undefined, page);
+    }
+  };
+
+  const handleSearch = () => {
+    if (startDate && endDate) {
+      const formattedStart = format(startDate, "yyyy-MM-dd");
+      const formattedEnd = format(endDate, "yyyy-MM-dd");
+      fetchOrders(formattedStart, formattedEnd, currentPage);
+    }
+  };
+
+  const handleRowClick = (id: number) => {
+    router.push(`/details/${id}`);
+  };
+
   return (
-    <Container maxWidth="lg" className="mt-5">
-      <Grid container spacing={3}>
-        {/* Sales History Chart */}
-        <Grid item xs={12} md={8}>
-          <Paper style={{ padding: 16 }}>
-            <Typography variant="h6">Sales History</Typography>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data}>
-                <Line type="monotone" dataKey="uv" stroke="#8884d8" />
-                <CartesianGrid stroke="#ccc" />
-                <Tooltip />
-                <XAxis dataKey="name" />
-                <YAxis />
-              </LineChart>
-            </ResponsiveContainer>
-          </Paper>
-        </Grid>
-
-        {/* Recent History Table */}
-        <Grid item xs={12}>
-          <Paper style={{ padding: 16 }}>
-            <Typography variant="h6">Recent Transactions</Typography>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Number</TableCell>
-                    <TableCell>Items</TableCell>
-                    <TableCell>Warehouse</TableCell>
-                    <TableCell>Supplier</TableCell>
-                    <TableCell>Booked On</TableCell>
-                    <TableCell>Booked By</TableCell>
-                    <TableCell>Sent</TableCell>
-                    <TableCell>Description</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {historyData.map((entry, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{entry.date}</TableCell>
-                      <TableCell>{entry.number}</TableCell>
-                      <TableCell>{entry.items}</TableCell>
-                      <TableCell>{entry.warehouse}</TableCell>
-                      <TableCell>{entry.supplier}</TableCell>
-                      <TableCell>{entry.bookedOn}</TableCell>
-                      <TableCell>{entry.bookedBy}</TableCell>
-                      <TableCell>{entry.sent}</TableCell>
-                      <TableCell>{entry.description}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Container>
+    <Box className="mx-4" sx={{ padding: 2 }}>
+      <Typography variant="h3" color="initial" gutterBottom>
+        Stock History
+      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+          alignItems: "center",
+          marginBottom: 2,
+        }}
+      >
+        <TextField label="Search" variant="outlined" sx={{ minWidth: 200 }} />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            label="Start Date"
+            onChange={(newValue) => setStartDate(newValue)}
+            renderInput={(params) => <TextField {...params} />}
+          />
+        </LocalizationProvider>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            label="End Date"
+            onChange={(newValue) => setEndDate(newValue)}
+            renderInput={(params) => <TextField {...params} />}
+          />
+        </LocalizationProvider>
+        <Button variant="contained" onClick={handleSearch}>
+          Search
+        </Button>
+      </Box>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Date</TableCell>
+              <TableCell>Total Price</TableCell>
+              <TableCell>User ID</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {Array.isArray(orders) && orders.length > 0 ? (
+              orders.map((order, index) => (
+                <TableRow key={index}>
+                  <TableCell>{order.id}</TableCell>
+                  <TableCell>{order.date}</TableCell>
+                  <TableCell>{order.total_price}</TableCell>
+                  <TableCell>{order.user_id}</TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleRowClick(order.id)}
+                    >
+                      <InfoIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  No orders found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Pagination
+        count={totalPages}
+        page={currentPage}
+        onChange={handlePageChange}
+        sx={{ marginTop: 2, display: "flex", justifyContent: "center" }}
+      />
+    </Box>
   );
 };
 
-export default HistoryPage;
+export default OrderHistory;
