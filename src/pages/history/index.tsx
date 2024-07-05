@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useRouter } from "next/router";
 
 const ProductHistory = () => {
   const [products, setProducts] = useState([]);
@@ -24,22 +25,36 @@ const ProductHistory = () => {
   const [endDate, setEndDate] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const router = useRouter();
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [page, search, startDate, endDate]);
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/products");
-      setProducts(response.data);
+      const response = await axios.get("http://localhost:3001/products", {
+        params: {
+          search,
+          startDate: startDate ? startDate.toISOString() : null,
+          endDate: endDate ? endDate.toISOString() : null,
+          page,
+        },
+      });
+      setProducts(response.data.products);
+      setTotalPages(response.data.totalPages);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   };
 
   const handleSearch = () => {
-    // Implement search and filter functionality here
+    setPage(1);
+    fetchProducts();
+  };
+
+  const handleViewTransactions = (productId) => {
+    router.push(`history/details/${productId}`);
   };
 
   return (
@@ -97,7 +112,12 @@ const ProductHistory = () => {
                   <TableCell>{product.stock}</TableCell>
                   <TableCell>{product.date}</TableCell>
                   <TableCell>
-                    <Button variant="contained">View</Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => handleViewTransactions(product.id)}
+                    >
+                      View
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))

@@ -37,6 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         <Button
           size="small"
           color="primary"
+          variant="contained"
           onClick={() => onAddToCart(product)}
         >
           Add to Cart

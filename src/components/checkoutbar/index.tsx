@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -24,7 +24,7 @@ import { CartItem } from "@/pages/dashboard/types"; // Adjust the import path
 
 interface CheckoutBarProps {
   cartItems: CartItem[];
-  tax: number;
+  taxRate: number;
   onIncreaseQuantity: (productName: string) => void;
   onDecreaseQuantity: (productName: string) => void;
   onRemoveItem: (productName: string) => void;
@@ -34,7 +34,7 @@ interface CheckoutBarProps {
 
 export const CheckoutBar: React.FC<CheckoutBarProps> = ({
   cartItems,
-  tax,
+  taxRate,
   onIncreaseQuantity,
   onDecreaseQuantity,
   onRemoveItem,
@@ -44,6 +44,26 @@ export const CheckoutBar: React.FC<CheckoutBarProps> = ({
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [subtotal, setSubtotal] = useState(0);
+  const [taxAmount, setTaxAmount] = useState(0);
+  const [finalTotal, setFinalTotal] = useState(0);
+
+  useEffect(() => {
+    const calculateSubtotal = (items: CartItem[]): number => {
+      return items.reduce(
+        (acc, item) => acc + item.product.price * item.quantity,
+        0
+      );
+    };
+
+    const newSubtotal = calculateSubtotal(cartItems);
+    const newTaxAmount = (newSubtotal * taxRate) / 100;
+    const newFinalTotal = newSubtotal + newTaxAmount;
+
+    setSubtotal(newSubtotal);
+    setTaxAmount(newTaxAmount);
+    setFinalTotal(newFinalTotal);
+  }, [cartItems, taxRate]);
 
   const handleCheckout = () => {
     setOpenDialog(true);
@@ -60,17 +80,6 @@ export const CheckoutBar: React.FC<CheckoutBarProps> = ({
   const handleCancelCheckout = () => {
     setOpenDialog(false);
   };
-
-  const calculateTotal = (items: CartItem[]): number => {
-    return items.reduce(
-      (acc, item) => acc + item.product.price * item.quantity,
-      0
-    );
-  };
-
-  const totalAmount = calculateTotal(cartItems);
-  const taxAmount = (totalAmount * tax) / 100;
-  const finalTotal = totalAmount + taxAmount;
 
   return (
     <>
@@ -121,7 +130,10 @@ export const CheckoutBar: React.FC<CheckoutBarProps> = ({
         </CardContent>
         <Box sx={{ padding: 2 }}>
           <Typography variant="body1">
-            Tax ({tax}%): ${taxAmount.toFixed(2)}
+            Subtotal: ${subtotal.toFixed(2)}
+          </Typography>
+          <Typography variant="body1">
+            Tax ({taxRate}%): ${taxAmount.toFixed(2)}
           </Typography>
           <Typography variant="h6">Total: ${finalTotal.toFixed(2)}</Typography>
           <Button

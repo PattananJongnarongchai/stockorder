@@ -1,9 +1,19 @@
 "use client";
 import React, { useState, useEffect, useContext } from "react";
-import { Container, Grid, Typography, Chip, Box } from "@mui/material";
+import {
+  Container,
+  Grid,
+  Typography,
+  Chip,
+  Box,
+  Button,
+  Pagination,
+} from "@mui/material";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import axios from "axios";
 import ProductCard from "@/components/productcard/ProductCard";
-import CheckoutBar from "@/components/checkoutbar"; // Adjust the import path
+import CheckoutBar from "@/components/checkoutbar/"; // Adjust the import path
 import { Product, Category, CartItem } from "./types";
 import AuthContext from "../../contexts/AuthContext";
 
@@ -15,20 +25,51 @@ const Dashboard: React.FC = () => {
   );
   const [cart, setCart] = useState<CartItem[]>([]);
   const { token } = useContext(AuthContext);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [page, setPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [subtotal, setSubtotal] = useState<number>(0);
+  const [taxAmount, setTaxAmount] = useState<number>(0);
+  const [total, setTotal] = useState<number>(0);
+  const [taxRate, setTaxRate] = useState<number>(7); // Example tax rate
 
   useEffect(() => {
-    // Fetch categories from backend
-    axios
-      .get("http://localhost:3001/categories")
-      .then((response) => setCategories(response.data))
-      .catch((error) => console.error("Error fetching categories:", error));
-
-    // Fetch products from backend
-    axios
-      .get("http://localhost:3001/products")
-      .then((response) => setProducts(response.data))
-      .catch((error) => console.error("Error fetching products:", error));
+    fetchCategories();
+    fetchProducts();
   }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [startDate, endDate, page]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/categories");
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/products", {
+        params: {
+          startDate: startDate
+            ? startDate.toISOString().split("T")[0]
+            : undefined,
+          endDate: endDate ? endDate.toISOString().split("T")[0] : undefined,
+          page,
+          limit: 10,
+        },
+      });
+      setProducts(response.data.products);
+      setTotalPages(response.data.totalPages);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
   const handleCategorySelect = (category: Category) => {
     setSelectedCategory(category);
@@ -90,18 +131,34 @@ const Dashboard: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       )
-      .then(() => {
-        alert("Checkout successful.");
-        setCart([]);
+      .then((response) => {
+        const { total, taxAmount, subtotal, taxRate } = response.data;
+        setSubtotal(subtotal);
+        setTaxAmount(taxAmount);
+        setTotal(total);
+        setTaxRate(taxRate); // Store taxRate
+        handleClearCart();
+        setSnackbarMessage(
+          `Checkout successful. Total: $${total.toFixed(
+            2
+          )}, Tax: $${taxAmount.toFixed(2)}, Subtotal: $${subtotal.toFixed(2)}`
+        );
+        setOpenSnackbar(true);
       })
       .catch((error) => {
         console.error("There was an error during checkout!", error);
-        alert("Checkout failed.");
+        if (error.response && error.response.status === 403) {
+          alert(
+            "You are not authorized to perform this action. Please log in again."
+          );
+        } else {
+          alert("Checkout failed.");
+        }
       });
   };
 
   const handleClearCart = () => {
-    setCart([]); // Clear the cart after checkout
+    setCart([]);
   };
 
   const filteredProducts: Product[] = selectedCategory
@@ -163,12 +220,24 @@ const Dashboard: React.FC = () => {
           />
         </div>
         <Grid container spacing={2} justifyContent="flex-start">
-          {filteredProducts.map((product) => (
-            <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
-              <ProductCard product={product} onAddToCart={handleAddToCart} />
-            </Grid>
-          ))}
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
+                <ProductCard product={product} onAddToCart={handleAddToCart} />
+              </Grid>
+            ))
+          ) : (
+            <Typography>No products found.</Typography>
+          )}
         </Grid>
+        <Box sx={{ marginTop: 2 }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(e, value) => setPage(value)}
+            sx={{ display: "flex", justifyContent: "center" }}
+          />
+        </Box>
       </Box>
       <Box
         sx={{
@@ -183,12 +252,12 @@ const Dashboard: React.FC = () => {
       >
         <CheckoutBar
           cartItems={cart}
-          tax={0}
+          taxRate={taxRate}
           onIncreaseQuantity={handleIncreaseQuantity}
           onDecreaseQuantity={handleDecreaseQuantity}
           onRemoveItem={handleRemoveItem}
           onCheckout={handleCheckout}
-          onClearCart={handleClearCart} // Pass the new prop
+          onClearCart={handleClearCart}
         />
       </Box>
     </Container>

@@ -61,7 +61,7 @@ const ManageDishes: React.FC = () => {
 
     axios
       .get("http://localhost:3001/products")
-      .then((response) => setProducts(response.data))
+      .then((response) => setProducts(response.data.products))
       .catch((error) => console.error("Error fetching products:", error));
   }, []);
 
