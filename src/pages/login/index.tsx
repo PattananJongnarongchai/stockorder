@@ -17,11 +17,12 @@ const Login: React.FC = () => {
         username,
         password,
       });
-
-      login(response.data.token, username);
-      router.push("/dashboard"); // Redirect to a protected route
+      const { token, user } = response.data; // Ensure your backend sends back user data
+      login(token, user);
+      router.push("/dashboard");
     } catch (err) {
-      setError("Invalid username or password");
+      console.error("Error logging in:", err);
+      setError("Invalid username or password. Please try again.");
     }
   };
 

@@ -1,9 +1,7 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
-import { format } from "date-fns";
 import {
+  Box,
   Table,
   TableBody,
   TableCell,
@@ -11,110 +9,64 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Typography,
   Pagination,
   TextField,
-  Typography,
-  Box,
   Button,
-  IconButton,
 } from "@mui/material";
-import { useRouter } from "next/router";
-import AuthContext from "../../contexts/AuthContext";
-import InfoIcon from "@mui/icons-material/Info";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
-interface Order {
-  id: number;
-  date: string;
-  total_price: number;
-  user_id: string;
-}
-
-const OrderHistory: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const { isAuthenticated, token } = useContext(AuthContext);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
-  const router = useRouter();
-
-  const fetchOrders = (start?: string, end?: string, page = 1) => {
-    if (isAuthenticated && token) {
-      axios
-        .get("http://localhost:3001/orders", {
-          params: {
-            startDate: start,
-            endDate: end,
-            // page,
-            limit: 10,
-          },
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          setOrders(response.data.orders);
-          setTotalPages(response.data.totalPages);
-        })
-        .catch((error) => {
-          console.error("Error fetching orders:", error);
-        });
-    }
-  };
+const ProductHistory = () => {
+  const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    // Fetch initial data
-    fetchOrders();
-  }, [isAuthenticated, token]);
+    fetchProducts();
+  }, []);
 
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    page: number
-  ) => {
-    setCurrentPage(page);
-    if (startDate && endDate) {
-      const formattedStart = format(startDate, "yyyy-MM-dd");
-      const formattedEnd = format(endDate, "yyyy-MM-dd");
-      fetchOrders(formattedStart, formattedEnd, page);
-    } else {
-      fetchOrders(undefined, undefined, page);
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/products");
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
     }
   };
 
   const handleSearch = () => {
-    if (startDate && endDate) {
-      const formattedStart = format(startDate, "yyyy-MM-dd");
-      const formattedEnd = format(endDate, "yyyy-MM-dd");
-      fetchOrders(formattedStart, formattedEnd, currentPage);
-    }
-  };
-
-  const handleRowClick = (id: number) => {
-    router.push(`/details/${id}`);
+    // Implement search and filter functionality here
   };
 
   return (
-    <Box className="mx-4" sx={{ padding: 2 }}>
-      <Typography variant="h3" color="initial" gutterBottom>
-        Stock History
+    <Box sx={{ padding: 2 }}>
+      <Typography variant="h3" gutterBottom>
+        Product History
       </Typography>
       <Box
-        sx={{
-          display: "flex",
-          gap: 2,
-          alignItems: "center",
-          marginBottom: 2,
-        }}
+        sx={{ display: "flex", gap: 2, alignItems: "center", marginBottom: 2 }}
       >
-        <TextField label="Search" variant="outlined" sx={{ minWidth: 200 }} />
+        <TextField
+          label="Search"
+          variant="outlined"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          sx={{ minWidth: 200 }}
+        />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DatePicker
             label="Start Date"
+            value={startDate}
             onChange={(newValue) => setStartDate(newValue)}
             renderInput={(params) => <TextField {...params} />}
           />
-        </LocalizationProvider>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DatePicker
             label="End Date"
+            value={endDate}
             onChange={(newValue) => setEndDate(newValue)}
             renderInput={(params) => <TextField {...params} />}
           />
@@ -128,34 +80,31 @@ const OrderHistory: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Price</TableCell>
+              <TableCell>Stock</TableCell>
               <TableCell>Date</TableCell>
-              <TableCell>Total Price</TableCell>
-              <TableCell>User ID</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {Array.isArray(orders) && orders.length > 0 ? (
-              orders.map((order, index) => (
-                <TableRow key={index}>
-                  <TableCell>{order.id}</TableCell>
-                  <TableCell>{order.date}</TableCell>
-                  <TableCell>{order.total_price}</TableCell>
-                  <TableCell>{order.user_id}</TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      color="primary"
-                      onClick={() => handleRowClick(order.id)}
-                    >
-                      <InfoIcon />
-                    </IconButton>
+            {products.length > 0 ? (
+              products.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell>{product.id}</TableCell>
+                  <TableCell>{product.name}</TableCell>
+                  <TableCell>{product.price}</TableCell>
+                  <TableCell>{product.stock}</TableCell>
+                  <TableCell>{product.date}</TableCell>
+                  <TableCell>
+                    <Button variant="contained">View</Button>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} align="center">
-                  No orders found.
+                <TableCell colSpan={6} align="center">
+                  No products found.
                 </TableCell>
               </TableRow>
             )}
@@ -164,12 +113,12 @@ const OrderHistory: React.FC = () => {
       </TableContainer>
       <Pagination
         count={totalPages}
-        page={currentPage}
-        onChange={handlePageChange}
+        page={page}
+        onChange={(e, value) => setPage(value)}
         sx={{ marginTop: 2, display: "flex", justifyContent: "center" }}
       />
     </Box>
   );
 };
 
-export default OrderHistory;
+export default ProductHistory;

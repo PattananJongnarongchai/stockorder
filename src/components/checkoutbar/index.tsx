@@ -19,22 +19,27 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { CartItem } from "@/pages/dashboard/types";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { CartItem } from "@/pages/dashboard/types"; // Adjust the import path
 
 interface CheckoutBarProps {
   cartItems: CartItem[];
   tax: number;
   onIncreaseQuantity: (productName: string) => void;
   onDecreaseQuantity: (productName: string) => void;
+  onRemoveItem: (productName: string) => void;
   onCheckout: () => void;
+  onClearCart: () => void; // Add this prop to handle cart clearing
 }
 
-const CheckoutBar: React.FC<CheckoutBarProps> = ({
+export const CheckoutBar: React.FC<CheckoutBarProps> = ({
   cartItems,
   tax,
   onIncreaseQuantity,
   onDecreaseQuantity,
+  onRemoveItem,
   onCheckout,
+  onClearCart, // Use the new prop
 }) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -47,6 +52,7 @@ const CheckoutBar: React.FC<CheckoutBarProps> = ({
   const handleConfirmCheckout = () => {
     setOpenDialog(false);
     onCheckout();
+    onClearCart(); // Clear the cart after checkout
     setSnackbarMessage("Checkout successful");
     setOpenSnackbar(true);
   };
@@ -97,8 +103,12 @@ const CheckoutBar: React.FC<CheckoutBarProps> = ({
                   </IconButton>
                   <IconButton
                     onClick={() => onDecreaseQuantity(item.product.name)}
+                    disabled={item.quantity === 1}
                   >
                     <RemoveIcon />
+                  </IconButton>
+                  <IconButton onClick={() => onRemoveItem(item.product.name)}>
+                    <DeleteIcon />
                   </IconButton>
                 </ListItem>
               ))

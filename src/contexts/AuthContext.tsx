@@ -1,66 +1,62 @@
-import React, { createContext, useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import jwt_decode, { JwtPayload } from "jwt-decode";
+// src/contexts/AuthContext.tsx
+"use client";
 
-interface AuthContextProps {
+import React, { createContext, useState, useEffect, ReactNode } from "react";
+
+interface AuthContextType {
+  user: User | null;
   isAuthenticated: boolean;
-  username: string | null;
-  token: string | null;
-  login: (token: string, username: string) => void;
+  login: (token: string, user: User) => void;
   logout: () => void;
+  token: string | null; // Add token to context
 }
 
-interface DecodedToken extends JwtPayload {
+interface User {
+  id: number;
   username: string;
 }
 
-const AuthContext = createContext<AuthContextProps>({
-  isAuthenticated: false,
-  username: null,
-  token: null,
-  login: () => {},
-  logout: () => {},
-});
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const router = useRouter();
+  const [token, setToken] = useState<string | null>(null); // Add token state
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedUsername = localStorage.getItem("username");
+    const savedToken = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("user");
 
-    if (storedToken && storedUsername) {
+    if (savedToken && savedUser) {
+      setToken(savedToken); // Set token
+      setUser(JSON.parse(savedUser));
       setIsAuthenticated(true);
-      setToken(storedToken);
-      setUsername(storedUsername);
     }
   }, []);
 
-  const login = (token: string, username: string) => {
+  const login = (token: string, user: User) => {
     localStorage.setItem("token", token);
-    localStorage.setItem("username", username);
+    localStorage.setItem("user", JSON.stringify(user));
+    setToken(token); // Set token
+    setUser(user);
     setIsAuthenticated(true);
-    setToken(token);
-    setUsername(username);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("username");
+    localStorage.removeItem("user");
+    setToken(null); // Clear token
+    setUser(null);
     setIsAuthenticated(false);
-    setToken(null);
-    setUsername(null);
-    router.push("/login");
   };
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, username, token, login, logout }}
+      value={{ user, isAuthenticated, login, logout, token }}
     >
       {children}
     </AuthContext.Provider>

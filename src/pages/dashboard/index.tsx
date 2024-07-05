@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Container, Grid, Typography, Chip, Box } from "@mui/material";
 import axios from "axios";
 import ProductCard from "@/components/productcard/ProductCard";
-import CheckoutBar from "@/components/checkoutbar";
+import CheckoutBar from "@/components/checkoutbar"; // Adjust the import path
 import { Product, Category, CartItem } from "./types";
 import AuthContext from "../../contexts/AuthContext";
 
@@ -70,6 +70,12 @@ const Dashboard: React.FC = () => {
     );
   };
 
+  const handleRemoveItem = (productName: string) => {
+    setCart((prevCart) =>
+      prevCart.filter((item) => item.product.name !== productName)
+    );
+  };
+
   const handleCheckout = () => {
     if (cart.length === 0) {
       alert("No items in the cart.");
@@ -92,6 +98,10 @@ const Dashboard: React.FC = () => {
         console.error("There was an error during checkout!", error);
         alert("Checkout failed.");
       });
+  };
+
+  const handleClearCart = () => {
+    setCart([]); // Clear the cart after checkout
   };
 
   const filteredProducts: Product[] = selectedCategory
@@ -176,7 +186,9 @@ const Dashboard: React.FC = () => {
           tax={0}
           onIncreaseQuantity={handleIncreaseQuantity}
           onDecreaseQuantity={handleDecreaseQuantity}
+          onRemoveItem={handleRemoveItem}
           onCheckout={handleCheckout}
+          onClearCart={handleClearCart} // Pass the new prop
         />
       </Box>
     </Container>

@@ -1,4 +1,6 @@
+// src/components/header/index.tsx
 "use client";
+
 import React, { useContext, useState } from "react";
 import {
   AppBar,
@@ -12,14 +14,13 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { useRouter } from "next/router";
 import AuthContext from "../../contexts/AuthContext";
-import DrawerWithSidebar from "../sidebar/drawer";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
-  const { isAuthenticated, username, logout } = useContext(AuthContext);
+  const { isAuthenticated, user, logout } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
 
@@ -51,16 +52,19 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Stock Order System
         </Typography>
-        {isAuthenticated && username ? (
+        {isAuthenticated && user?.username ? (
           <>
             <Button color="inherit" onClick={handleMenuOpen}>
-              {username}
+              {user.username}
             </Button>
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleMenuClose}
             >
+              <MenuItem onClick={() => router.push(`/UserSetting/${user.id}`)}>
+                Setting
+              </MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </>
