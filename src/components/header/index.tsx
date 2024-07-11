@@ -1,4 +1,3 @@
-// src/components/header/index.tsx
 "use client";
 
 import React, { useContext, useState } from "react";
@@ -20,9 +19,15 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
-  const { isAuthenticated, user, logout } = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
+
+  if (!authContext) {
+    return null; // หรือแสดง UI ที่เหมาะสมในกรณีที่ context เป็น null
+  }
+
+  const { isAuthenticated, user, logout } = authContext;
 
   const handleLogout = () => {
     logout();

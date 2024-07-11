@@ -14,17 +14,25 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useRouter } from "next/router";
 
-const ProductHistory = () => {
-  const [products, setProducts] = useState([]);
-  const [search, setSearch] = useState("");
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  stock: number;
+  date: string;
+}
+
+const ProductHistory: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [search, setSearch] = useState<string>("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [page, setPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const router = useRouter();
 
   useEffect(() => {
@@ -53,7 +61,7 @@ const ProductHistory = () => {
     fetchProducts();
   };
 
-  const handleViewTransactions = (productId) => {
+  const handleViewTransactions = (productId: number) => {
     router.push(`history/details/${productId}`);
   };
 
@@ -77,13 +85,15 @@ const ProductHistory = () => {
             label="Start Date"
             value={startDate}
             onChange={(newValue) => setStartDate(newValue)}
-            renderInput={(params) => <TextField {...params} />}
+            slots={{ textField: TextField }}
+            slotProps={{ textField: { variant: "outlined" } }}
           />
           <DatePicker
             label="End Date"
             value={endDate}
             onChange={(newValue) => setEndDate(newValue)}
-            renderInput={(params) => <TextField {...params} />}
+            slots={{ textField: TextField }}
+            slotProps={{ textField: { variant: "outlined" } }}
           />
         </LocalizationProvider>
         <Button variant="contained" onClick={handleSearch}>

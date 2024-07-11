@@ -7,7 +7,7 @@ import {
   CardActions,
   Button,
 } from "@mui/material";
-import { Product } from "@/types";
+import { Product } from "@/components/types";
 
 interface ProductCardProps {
   product: Product;

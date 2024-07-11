@@ -20,7 +20,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { CartItem } from "@/pages/dashboard/types"; // Adjust the import path
+import { CartItem } from "@/components/types"; // Adjust the import path
 
 interface CheckoutBarProps {
   cartItems: CartItem[];

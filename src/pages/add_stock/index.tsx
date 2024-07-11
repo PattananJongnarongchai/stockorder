@@ -1,4 +1,3 @@
-// AddProduct.tsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -20,17 +19,23 @@ const AddButton = styled(Button)({
   },
 });
 
-const AddProduct = () => {
+interface Category {
+  id: string;
+  name: string;
+}
+
+const AddProduct: React.FC = () => {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split("T")[0], // Default to current date
     name: "",
     price: "",
     stock: "",
-    image: null,
+    image: null as File | null,
     category: "",
     description: "",
   });
-  const [categories, setCategories] = useState([]);
+
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     axios
@@ -39,7 +44,7 @@ const AddProduct = () => {
       .catch((error) => console.error("Error fetching categories:", error));
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -47,19 +52,21 @@ const AddProduct = () => {
     });
   };
 
-  const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      image: e.target.files[0],
-    });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFormData({
+        ...formData,
+        image: e.target.files[0],
+      });
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const data = new FormData();
     for (const key in formData) {
-      data.append(key, formData[key]);
+      data.append(key, formData[key as keyof typeof formData] as string | Blob);
     }
 
     axios
@@ -147,7 +154,7 @@ const AddProduct = () => {
                 onChange={handleFileChange}
               />
               <label htmlFor="image-upload">
-                <Button variant="contained" component="span" fullWidth required>
+                <Button variant="contained" component="span" fullWidth>
                   Upload Image
                 </Button>
               </label>

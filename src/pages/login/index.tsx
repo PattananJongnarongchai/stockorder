@@ -9,7 +9,13 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const router = useRouter();
-  const { login } = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
+
+  if (!authContext) {
+    return <Typography variant="h6">Loading...</Typography>;
+  }
+
+  const { login } = authContext;
 
   const handleLogin = async () => {
     try {

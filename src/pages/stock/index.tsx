@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import {
   Container,
   Grid,
@@ -25,10 +25,11 @@ import {
   InputLabel,
 } from "@mui/material";
 import axios from "axios";
-import { Product, Category } from "./types";
+import { Product, Category } from "@/components/types";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { SelectChangeEvent } from "@mui/material/Select";
 
 const ManageDishes: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -95,7 +96,7 @@ const ManageDishes: React.FC = () => {
     setOpenCategoryDialog(false);
   };
 
-  const handleProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProductInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
     if (name === "image" && files) {
       const file = files[0];
@@ -110,7 +111,12 @@ const ManageDishes: React.FC = () => {
     }
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProductSelectChange = (e: SelectChangeEvent<any>) => {
+    const { name, value } = e.target;
+    setNewProduct({ ...newProduct, [name]: value });
+  };
+
+  const handleCategoryChange = (e: ChangeEvent<HTMLInputElement>) => {
     setNewCategory({ ...newCategory, [e.target.name]: e.target.value });
   };
 
@@ -372,7 +378,7 @@ const ManageDishes: React.FC = () => {
             fullWidth
             variant="standard"
             value={newProduct.name}
-            onChange={handleProductChange}
+            onChange={handleProductInputChange}
           />
           <TextField
             margin="dense"
@@ -381,7 +387,7 @@ const ManageDishes: React.FC = () => {
             fullWidth
             variant="standard"
             value={newProduct.price}
-            onChange={handleProductChange}
+            onChange={handleProductInputChange}
           />
           <TextField
             margin="dense"
@@ -390,7 +396,7 @@ const ManageDishes: React.FC = () => {
             fullWidth
             variant="standard"
             value={newProduct.stock}
-            onChange={handleProductChange}
+            onChange={handleProductInputChange}
           />
           <TextField
             margin="dense"
@@ -399,14 +405,14 @@ const ManageDishes: React.FC = () => {
             fullWidth
             variant="standard"
             value={newProduct.description}
-            onChange={handleProductChange}
+            onChange={handleProductInputChange}
           />
           <FormControl fullWidth variant="standard" sx={{ marginY: 2 }}>
             <InputLabel>Category</InputLabel>
             <Select
               name="category_id"
               value={newProduct.category_id}
-              onChange={handleProductChange}
+              onChange={handleProductSelectChange}
             >
               {categories.map((category) => (
                 <MenuItem key={category.id} value={category.id}>
@@ -421,7 +427,7 @@ const ManageDishes: React.FC = () => {
               type="file"
               hidden
               name="image"
-              onChange={handleProductChange}
+              onChange={handleProductInputChange}
             />
           </Button>
           {validationError && (

@@ -1,5 +1,4 @@
-// src/pages/product-transactions/[id].tsx
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
@@ -16,10 +15,20 @@ import {
   Button,
 } from "@mui/material";
 
-const ProductTransactions = () => {
+interface Transaction {
+  id: number;
+  product_id: number;
+  quantity: number;
+  total_price: number;
+  date: string;
+  order_id: number;
+  type: string;
+}
+
+const ProductTransactions: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
     if (id) {

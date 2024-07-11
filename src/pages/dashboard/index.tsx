@@ -14,17 +14,18 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import axios from "axios";
 import ProductCard from "@/components/productcard/ProductCard";
 import CheckoutBar from "@/components/checkoutbar/"; // Adjust the import path
-import { Product, Category, CartItem } from "./types";
+import { Product, Category, CartItem } from "../../components/types";
 import AuthContext from "../../contexts/AuthContext";
 
 const Dashboard: React.FC = () => {
+  const authContext = useContext(AuthContext);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
   const [cart, setCart] = useState<CartItem[]>([]);
-  const { token } = useContext(AuthContext);
+  const token = authContext?.token;
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [page, setPage] = useState<number>(1);
@@ -265,3 +266,11 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+function setSnackbarMessage(arg0: string) {
+  throw new Error("Function not implemented.");
+}
+
+function setOpenSnackbar(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
+
