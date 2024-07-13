@@ -1,4 +1,6 @@
-import React from "react";
+// src/components/Sidebar.tsx
+
+import React, { useContext } from "react";
 import {
   Drawer,
   List,
@@ -11,6 +13,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import HistoryIcon from "@mui/icons-material/History";
 import { useRouter } from "next/router";
+import AuthContext from "../../contexts/AuthContext";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -18,7 +21,14 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const authContext = useContext(AuthContext);
   const router = useRouter();
+
+  if (!authContext) {
+    return null;
+  }
+
+  const { user } = authContext;
 
   const handleNavigation = (path: string) => {
     router.push(path);
@@ -43,12 +53,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </ListItemIcon>
           <ListItemText primary="Dashboard" />
         </ListItem>
-        <ListItem button onClick={() => handleNavigation("/stock")}>
-          <ListItemIcon>
-            <Inventory2Icon />
-          </ListItemIcon>
-          <ListItemText primary="Order Stock" />
-        </ListItem>
+        {user?.role === "admin" && (
+          <ListItem button onClick={() => handleNavigation("/stock")}>
+            <ListItemIcon>
+              <Inventory2Icon />
+            </ListItemIcon>
+            <ListItemText primary="Order Stock" />
+          </ListItem>
+        )}
         <ListItem button onClick={() => handleNavigation("/history")}>
           <ListItemIcon>
             <HistoryIcon />

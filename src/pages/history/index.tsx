@@ -41,7 +41,7 @@ const ProductHistory: React.FC = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/products", {
+      const response = await axios.get("http://localhost:3001/api/products", {
         params: {
           search,
           startDate: startDate ? startDate.toISOString() : null,
@@ -68,7 +68,7 @@ const ProductHistory: React.FC = () => {
   return (
     <Box sx={{ padding: 2 }}>
       <Typography variant="h3" gutterBottom>
-        Product History
+         History
       </Typography>
       <Box
         sx={{ display: "flex", gap: 2, alignItems: "center", marginBottom: 2 }}

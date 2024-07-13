@@ -34,7 +34,7 @@ const ProductDetail: React.FC = () => {
     const fetchProductDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/product-transactions/${productId}`
+          `http://localhost:3001/api/product-transactions/${productId}`
         );
         setTransactions(response.data);
       } catch (error) {

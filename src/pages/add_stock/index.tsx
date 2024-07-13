@@ -39,7 +39,7 @@ const AddProduct: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/categories")
+      .get("http://localhost:3001/api/categories")
       .then((response) => setCategories(response.data))
       .catch((error) => console.error("Error fetching categories:", error));
   }, []);
@@ -70,7 +70,7 @@ const AddProduct: React.FC = () => {
     }
 
     axios
-      .post("http://localhost:3001/products", data, {
+      .post("http://localhost:3001/api/products", data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

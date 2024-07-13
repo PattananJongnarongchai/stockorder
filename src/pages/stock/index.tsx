@@ -56,12 +56,12 @@ const ManageDishes: React.FC = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/categories")
+      .get("http://localhost:3001/api/categories")
       .then((response) => setCategories(response.data))
       .catch((error) => console.error("Error fetching categories:", error));
 
     axios
-      .get("http://localhost:3001/products")
+      .get("http://localhost:3001/api/products")
       .then((response) => setProducts(response.data.products))
       .catch((error) => console.error("Error fetching products:", error));
   }, []);
@@ -137,7 +137,7 @@ const ManageDishes: React.FC = () => {
     });
 
     axios
-      .post("http://localhost:3001/products", formData, {
+      .post("http://localhost:3001/api/products", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {
@@ -157,7 +157,7 @@ const ManageDishes: React.FC = () => {
 
   const handleCategorySubmit = () => {
     axios
-      .post("http://localhost:3001/categories", newCategory)
+      .post("http://localhost:3001/api/categories", newCategory)
       .then((response) => {
         setCategories([...categories, response.data]);
         setOpenCategoryDialog(false);
@@ -185,7 +185,7 @@ const ManageDishes: React.FC = () => {
       formData.append(key, value as any);
     });
     axios
-      .put(`http://localhost:3001/products/${id}`, formData, {
+      .put(`http://localhost:3001/api/products/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {
@@ -209,7 +209,7 @@ const ManageDishes: React.FC = () => {
 
   const handleProductDelete = (id: number) => {
     axios
-      .delete(`http://localhost:3001/products/${id}`)
+      .delete(`http://localhost:3001/api/products/${id}`)
       .then(() => {
         setProducts(products.filter((product) => product.id !== id));
         setSeverity("success");

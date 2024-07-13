@@ -46,7 +46,7 @@ const Dashboard: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/categories");
+      const response = await axios.get("http://localhost:3001/api/categories");
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -55,7 +55,7 @@ const Dashboard: React.FC = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/products", {
+      const response = await axios.get("http://localhost:3001/api/products", {
         params: {
           startDate: startDate
             ? startDate.toISOString().split("T")[0]
@@ -126,7 +126,7 @@ const Dashboard: React.FC = () => {
 
     axios
       .post(
-        "http://localhost:3001/checkout",
+        "http://localhost:3001/api/checkout",
         { cartItems: cart },
         {
           headers: { Authorization: `Bearer ${token}` },

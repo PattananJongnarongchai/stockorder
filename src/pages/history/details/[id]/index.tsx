@@ -33,7 +33,7 @@ const ProductTransactions: React.FC = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:3001/product-transactions/${id}`)
+        .get(`http://localhost:3001/api/product-transactions/${id}`)
         .then((response) => setTransactions(response.data))
         .catch((error) => console.error("Error fetching transactions:", error));
     }

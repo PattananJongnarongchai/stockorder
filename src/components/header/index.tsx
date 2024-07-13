@@ -1,3 +1,4 @@
+// src/components/Header.tsx
 "use client";
 
 import React, { useContext, useState } from "react";
@@ -24,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   const router = useRouter();
 
   if (!authContext) {
-    return null; // หรือแสดง UI ที่เหมาะสมในกรณีที่ context เป็น null
+    return null;
   }
 
   const { isAuthenticated, user, logout } = authContext;
@@ -70,6 +71,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
               <MenuItem onClick={() => router.push(`/UserSetting/${user.id}`)}>
                 Setting
               </MenuItem>
+              
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </>
