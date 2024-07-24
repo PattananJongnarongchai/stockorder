@@ -18,7 +18,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
   const price = parseFloat(product.price as any); // Ensure price is a number
 
   return (
-    <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <Card
+      sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        transition: "transform 0.3s ease-in-out",
+        "&:hover": {
+          transform: "scale(1.05)",
+          boxShadow: 3,
+        },
+      }}
+    >
       <CardMedia
         component="img"
         sx={{ height: 200, objectFit: "cover" }}

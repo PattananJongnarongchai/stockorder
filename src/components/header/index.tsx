@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" style={{ background: "#616e38 " }}>
       <Toolbar>
         <IconButton
           edge="start"
@@ -71,7 +71,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
               <MenuItem onClick={() => router.push(`/UserSetting/${user.id}`)}>
                 Setting
               </MenuItem>
-              
+
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </>

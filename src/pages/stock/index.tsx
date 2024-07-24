@@ -302,6 +302,11 @@ const ManageDishes: React.FC = () => {
                 alignItems: "center",
                 cursor: "pointer",
                 height: "100%",
+                transition: "transform 0.3s ease-in-out",
+                "&:hover": {
+                  transform: "scale(1.05)",
+                  boxShadow: 3,
+                },
               }}
               onClick={handleAddProduct}
             >
@@ -313,7 +318,17 @@ const ManageDishes: React.FC = () => {
           </Grid>
           {filteredProducts.map((product) => (
             <Grid item key={product.id} xs={12} sm={6} md={4} lg={2.4}>
-              <Card sx={{ display: "flex", flexDirection: "column" }}>
+              <Card
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  transition: "transform 0.3s ease-in-out",
+                  "&:hover": {
+                    transform: "scale(1.05)",
+                    boxShadow: 3,
+                  },
+                }}
+              >
                 <CardMedia
                   component="img"
                   height="100"

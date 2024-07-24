@@ -7,6 +7,9 @@ import {
   Button,
   Snackbar,
   Alert,
+  Card,
+  CardContent,
+  CardActions,
 } from "@mui/material";
 import axios from "axios";
 import AuthContext from "@/contexts/AuthContext";
@@ -82,58 +85,65 @@ const UserSettings: React.FC = () => {
         <Typography variant="h4" gutterBottom>
           User Settings
         </Typography>
-        <Box sx={{ mt: 2 }}>
-          <TextField
-            fullWidth
-            label="Username"
-            value={username}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setUsername(e.target.value)
-            }
-            sx={{ mb: 2 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleUpdateUser}
-            fullWidth
-          >
-            Update Username
-          </Button>
-        </Box>
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h6" gutterBottom>
-            Change Password
-          </Typography>
-          <TextField
-            fullWidth
-            label="Current Password"
-            type="password"
-            value={currentPassword}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setCurrentPassword(e.target.value)
-            }
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            fullWidth
-            label="New Password"
-            type="password"
-            value={newPassword}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setNewPassword(e.target.value)
-            }
-            sx={{ mb: 2 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleChangePassword}
-            fullWidth
-          >
-            Change Password
-          </Button>
-        </Box>
+        <Card sx={{ mt: 2 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Update Username
+            </Typography>
+            <TextField
+              fullWidth
+              label="Username"
+              value={username}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setUsername(e.target.value)
+              }
+              sx={{ mb: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUpdateUser}
+              fullWidth
+            >
+              Update Username
+            </Button>
+          </CardContent>
+        </Card>
+        <Card sx={{ mt: 4 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Change Password
+            </Typography>
+            <TextField
+              fullWidth
+              label="Current Password"
+              type="password"
+              value={currentPassword}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setCurrentPassword(e.target.value)
+              }
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="New Password"
+              type="password"
+              value={newPassword}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setNewPassword(e.target.value)
+              }
+              sx={{ mb: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleChangePassword}
+              fullWidth
+            >
+              Change Password
+            </Button>
+          </CardContent>
+        </Card>
       </Box>
       <Snackbar
         open={openSnackbar}
