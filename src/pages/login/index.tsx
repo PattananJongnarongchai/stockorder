@@ -61,6 +61,7 @@ const Page: React.FC = () => {
         position: "relative",
       }}
     >
+      <img src="/images/background.png" alt="" width="900px" height="100px"/>
       <Container
         component={Paper}
         elevation={6}
@@ -139,17 +140,6 @@ const Page: React.FC = () => {
           >
             Login
           </Button>
-          <Box sx={{ mt: 2 }}>
-            <Stack direction="row" justifyContent="flex-end" spacing={1}>
-              <Link
-                href="/forgot-password" // ปรับตาม path ของคุณ
-                underline="hover"
-                variant="body2"
-              >
-                Forgot password?
-              </Link>
-            </Stack>
-          </Box>
         </form>
       </Container>
     </Box>

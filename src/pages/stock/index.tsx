@@ -55,16 +55,24 @@ const ManageDishes: React.FC = () => {
   const [validationError, setValidationError] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/api/categories")
-      .then((response) => setCategories(response.data))
-      .catch((error) => console.error("Error fetching categories:", error));
-
-    axios
-      .get("http://localhost:3001/api/products")
-      .then((response) => setProducts(response.data.products))
-      .catch((error) => console.error("Error fetching products:", error));
+    fetchCategoriesAndProducts();
   }, []);
+
+  const fetchCategoriesAndProducts = async () => {
+    try {
+      const categoriesResponse = await axios.get(
+        "http://localhost:3001/api/categories"
+      );
+      setCategories(categoriesResponse.data);
+
+      const productsResponse = await axios.get(
+        "http://localhost:3001/api/products"
+      );
+      setProducts(productsResponse.data.products);
+    } catch (error) {
+      console.error("Error fetching categories and products:", error);
+    }
+  };
 
   const handleCategorySelect = (category: Category) => {
     setSelectedCategory(category);
@@ -120,7 +128,7 @@ const ManageDishes: React.FC = () => {
     setNewCategory({ ...newCategory, [e.target.name]: e.target.value });
   };
 
-  const handleProductSubmit = () => {
+  const handleProductSubmit = async () => {
     if (
       !newProduct.name ||
       !newProduct.price ||
@@ -136,92 +144,96 @@ const ManageDishes: React.FC = () => {
       formData.append(key, value as any);
     });
 
-    axios
-      .post("http://localhost:3001/api/products", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((response) => {
-        setProducts([...products, response.data]);
-        setOpenProductDialog(false);
-        setSeverity("success");
-        setSnackbarMessage("Product added successfully");
-        setOpenSnackbar(true);
-      })
-      .catch((error) => {
-        console.error("Error adding product:", error);
-        setSeverity("error");
-        setSnackbarMessage("Error adding product");
-        setOpenSnackbar(true);
-      });
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/api/products",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      setProducts([...products, response.data]);
+      setOpenProductDialog(false);
+      setSeverity("success");
+      setSnackbarMessage("Product added successfully");
+      setOpenSnackbar(true);
+    } catch (error) {
+      console.error("Error adding product:", error);
+      setSeverity("error");
+      setSnackbarMessage("Error adding product");
+      setOpenSnackbar(true);
+    }
   };
 
-  const handleCategorySubmit = () => {
-    axios
-      .post("http://localhost:3001/api/categories", newCategory)
-      .then((response) => {
-        setCategories([...categories, response.data]);
-        setOpenCategoryDialog(false);
-        setSeverity("success");
-        setSnackbarMessage("Category added successfully");
-        setOpenSnackbar(true);
-      })
-      .catch((error) => {
-        console.error("Error adding category:", error);
-        setSeverity("error");
-        setSnackbarMessage("Error adding category");
-        setOpenSnackbar(true);
-      });
+  const handleCategorySubmit = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3001/api/categories",
+        newCategory
+      );
+      setCategories([...categories, response.data]);
+      setOpenCategoryDialog(false);
+      setSeverity("success");
+      setSnackbarMessage("Category added successfully");
+      setOpenSnackbar(true);
+    } catch (error) {
+      console.error("Error adding category:", error);
+      setSeverity("error");
+      setSnackbarMessage("Error adding category");
+      setOpenSnackbar(true);
+    }
   };
 
   const handleProductEdit = (product: Product) => {
     setEditProduct(product);
-    setNewProduct(product);
+    setNewProduct({
+      ...product,
+      image: null,
+    });
     setOpenProductDialog(true);
   };
 
-  const handleProductUpdate = (id: number) => {
+  const handleProductUpdate = async (id: number) => {
     const formData = new FormData();
     Object.entries(editProduct).forEach(([key, value]) => {
       formData.append(key, value as any);
     });
-    axios
-      .put(`http://localhost:3001/api/products/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((response) => {
-        setProducts(
-          products.map((product) =>
-            product.id === id ? response.data : product
-          )
-        );
-        setOpenProductDialog(false);
-        setSeverity("success");
-        setSnackbarMessage("Product updated successfully");
-        setOpenSnackbar(true);
-      })
-      .catch((error) => {
-        console.error("Error updating product:", error);
-        setSeverity("error");
-        setSnackbarMessage("Error updating product");
-        setOpenSnackbar(true);
-      });
+    try {
+      const response = await axios.put(
+        `http://localhost:3001/api/products/${id}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      setProducts(
+        products.map((product) => (product.id === id ? response.data : product))
+      );
+      setOpenProductDialog(false);
+      setSeverity("success");
+      setSnackbarMessage("Product updated successfully");
+      setOpenSnackbar(true);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      setSeverity("error");
+      setSnackbarMessage("Error updating product");
+      setOpenSnackbar(true);
+    }
   };
 
-  const handleProductDelete = (id: number) => {
-    axios
-      .delete(`http://localhost:3001/api/products/${id}`)
-      .then(() => {
-        setProducts(products.filter((product) => product.id !== id));
-        setSeverity("success");
-        setSnackbarMessage("Product deleted successfully");
-        setOpenSnackbar(true);
-      })
-      .catch((error) => {
-        console.error("Error deleting product:", error);
-        setSeverity("error");
-        setSnackbarMessage("Error deleting product");
-        setOpenSnackbar(true);
-      });
+  const handleProductDelete = async (id: number) => {
+    try {
+      await axios.delete(`http://localhost:3001/api/products/${id}`);
+      setProducts(products.filter((product) => product.id !== id));
+      setSeverity("success");
+      setSnackbarMessage("Product deleted successfully");
+      setOpenSnackbar(true);
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      setSeverity("error");
+      setSnackbarMessage("Error deleting product");
+      setOpenSnackbar(true);
+    }
   };
 
   const filteredProducts: Product[] = selectedCategory
@@ -331,7 +343,7 @@ const ManageDishes: React.FC = () => {
               >
                 <CardMedia
                   component="img"
-                  height="100"
+                  height="200"
                   image={`http://localhost:3001${product.image}`}
                   alt={product.name}
                   sx={{ height: 200, objectFit: "cover" }}

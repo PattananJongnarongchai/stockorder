@@ -17,6 +17,7 @@ import {
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useRouter } from "next/router";
+import format from "date-fns/format";
 
 interface Product {
   id: number;
@@ -41,16 +42,17 @@ const ProductHistory: React.FC = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/api/products", {
+      const response = await axios.get("http://localhost:3001/api/history", {
         params: {
           search,
-          startDate: startDate ? startDate.toISOString() : null,
-          endDate: endDate ? endDate.toISOString() : null,
+          startDate: startDate ? format(startDate, "yyyy-MM-dd") : null,
+          endDate: endDate ? format(endDate, "yyyy-MM-dd") : null,
           page,
         },
       });
-      setProducts(response.data.products);
-      setTotalPages(response.data.totalPages);
+      console.log(response.data); // Debugging: Log the response data
+      setProducts(response.data.products || []); // Ensure it is an array
+      setTotalPages(response.data.totalPages || 1); // Ensure totalPages is a number
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -68,7 +70,7 @@ const ProductHistory: React.FC = () => {
   return (
     <Box sx={{ padding: 2 }}>
       <Typography variant="h3" gutterBottom>
-         History
+        History
       </Typography>
       <Box
         sx={{ display: "flex", gap: 2, alignItems: "center", marginBottom: 2 }}
@@ -85,14 +87,12 @@ const ProductHistory: React.FC = () => {
             label="Start Date"
             value={startDate}
             onChange={(newValue) => setStartDate(newValue)}
-            slots={{ textField: TextField }}
             slotProps={{ textField: { variant: "outlined" } }}
           />
           <DatePicker
             label="End Date"
             value={endDate}
             onChange={(newValue) => setEndDate(newValue)}
-            slots={{ textField: TextField }}
             slotProps={{ textField: { variant: "outlined" } }}
           />
         </LocalizationProvider>
@@ -115,12 +115,12 @@ const ProductHistory: React.FC = () => {
           <TableBody>
             {products.length > 0 ? (
               products.map((product) => (
-                <TableRow key={product.id}>
+                <TableRow key={product.id} hover>
                   <TableCell>{product.id}</TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.price}</TableCell>
                   <TableCell>{product.stock}</TableCell>
-                  <TableCell>{product.date}</TableCell>
+                  <TableCell>{product.date.split("T")[0]}</TableCell>
                   <TableCell>
                     <Button
                       variant="contained"
