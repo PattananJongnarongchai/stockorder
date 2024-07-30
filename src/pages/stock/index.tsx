@@ -262,8 +262,8 @@ const ManageDishes: React.FC = () => {
           overflowY: "auto",
         }}
       >
-        <Typography variant="h6" gutterBottom>
-          Categories
+        <Typography variant="contained" gutterBottom>
+          ประเภทสินค้า
         </Typography>
         <List>
           {categories.map((category) => (
@@ -280,7 +280,7 @@ const ManageDishes: React.FC = () => {
           </ListItem>
         </List>
         <Button variant="contained" color="primary" onClick={handleAddCategory}>
-          Add New Category
+          เพิ่มประเภทสินค้า
         </Button>
       </Box>
       <Box
@@ -301,7 +301,7 @@ const ManageDishes: React.FC = () => {
           }}
         >
           <Typography variant="h6">
-            {selectedCategory ? selectedCategory.name : "All Products"}
+            {selectedCategory ? selectedCategory.name : "สินค้าทั้งหมด"}
           </Typography>
         </Box>
         <Grid container spacing={2}>
@@ -324,7 +324,7 @@ const ManageDishes: React.FC = () => {
             >
               <CardContent sx={{ textAlign: "center" }}>
                 <AddCircleOutlineIcon sx={{ fontSize: 50 }} />
-                <Typography variant="h6">Add New Product</Typography>
+                <Typography variant="h6">เพิ่มสินค้าใหม่</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -395,7 +395,7 @@ const ManageDishes: React.FC = () => {
         fullWidth
       >
         <DialogTitle>
-          {editProduct ? "Edit Product" : "Add New Product"}
+          {editProduct ? "แก้ไขสินค้า" : "เพิ่มสินค้า"}
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -435,7 +435,7 @@ const ManageDishes: React.FC = () => {
             onChange={handleProductInputChange}
           />
           <FormControl fullWidth variant="standard" sx={{ marginY: 2 }}>
-            <InputLabel>Category</InputLabel>
+            <InputLabel>ประเภทสินค้า</InputLabel>
             <Select
               name="category_id"
               value={newProduct.category_id}
@@ -449,7 +449,7 @@ const ManageDishes: React.FC = () => {
             </Select>
           </FormControl>
           <Button variant="contained" component="label">
-            Upload Image
+            อัพโหลดรูปภาพ
             <input
               type="file"
               hidden
@@ -464,7 +464,7 @@ const ManageDishes: React.FC = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleProductDialogClose}>Cancel</Button>
+          <Button onClick={handleProductDialogClose}>ยกเลิก</Button>
           <Button
             onClick={
               editProduct
@@ -472,7 +472,7 @@ const ManageDishes: React.FC = () => {
                 : handleProductSubmit
             }
           >
-            {editProduct ? "Update" : "Add"}
+            {editProduct ? "แก้ไข" : "เพิ่ม"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -483,7 +483,7 @@ const ManageDishes: React.FC = () => {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>Add New Category</DialogTitle>
+        <DialogTitle>เพิ่มประเภทสินค้าใหม่</DialogTitle>
         <DialogContent>
           <TextField
             margin="dense"
@@ -495,8 +495,8 @@ const ManageDishes: React.FC = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCategoryDialogClose}>Cancel</Button>
-          <Button onClick={handleCategorySubmit}>Add</Button>
+          <Button onClick={handleCategoryDialogClose}>ยกเลิก</Button>
+          <Button onClick={handleCategorySubmit}>เพิ่ม</Button>
         </DialogActions>
       </Dialog>
 

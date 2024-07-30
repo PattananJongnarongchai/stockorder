@@ -51,21 +51,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <ListItemIcon>
             <DashboardIcon />
           </ListItemIcon>
-          <ListItemText primary="Dashboard" />
+          <ListItemText primary="แดชน์บอร์ด" />
         </ListItem>
         {user?.role === "admin" && (
           <ListItem button onClick={() => handleNavigation("/stock")}>
             <ListItemIcon>
               <Inventory2Icon />
             </ListItemIcon>
-            <ListItemText primary="Order Stock" />
+            <ListItemText primary="รายการสินค้า" />
           </ListItem>
         )}
         <ListItem button onClick={() => handleNavigation("/history")}>
           <ListItemIcon>
             <HistoryIcon />
           </ListItemIcon>
-          <ListItemText primary="Order History" />
+          <ListItemText primary="ประวัติสินค้า" />
         </ListItem>
       </List>
     </Drawer>

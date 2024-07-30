@@ -202,7 +202,7 @@ const Dashboard: React.FC = () => {
         }}
       >
         <Typography variant="h4" gutterBottom>
-          All Products
+          สินค้าทั้งหมด
         </Typography>
         <div style={{ margin: "20px 0" }}>
           {categories.map((category) => (

@@ -69,15 +69,15 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
               onClose={handleMenuClose}
             >
               <MenuItem onClick={() => router.push(`/UserSetting/${user.id}`)}>
-                Setting
+                ตั้งค่าผู้ใช้
               </MenuItem>
 
-              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              <MenuItem onClick={handleLogout}>ออกจากระบบ</MenuItem>
             </Menu>
           </>
         ) : (
           <Button color="inherit" onClick={() => router.push("/login")}>
-            Sign In
+            เข้าสู่ระบบ
           </Button>
         )}
       </Toolbar>

@@ -9,7 +9,7 @@ import {
   Box,
 } from "@mui/material";
 import { Product } from "@/components/types";
-
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 interface ProductCardProps {
   product: Product;
   onAddToCart: (product: Product) => void;
@@ -56,7 +56,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
             zIndex: 1,
           }}
         >
-          Sold Out
+          สินค้าหมดแล้ว
         </Box>
       )}
       <CardContent sx={{ flexGrow: 1 }}>
@@ -69,13 +69,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
       </CardContent>
       <CardActions>
         <Button
-          size="small"
-          color="primary"
+          size="medium"
           variant="contained"
           onClick={() => onAddToCart(product)}
           disabled={product.stock === 0}
+          sx={{
+            backgroundColor: "green",
+            "&:hover": { backgroundColor: "darkgreen" },
+          }}
         >
-          Add to Cart
+          <ShoppingCartIcon /> เพิ่มสินค้าเข้าตระกร้า
         </Button>
       </CardActions>
     </Card>

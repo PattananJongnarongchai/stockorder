@@ -70,7 +70,7 @@ const ProductHistory: React.FC = () => {
   return (
     <Box sx={{ padding: 2 }}>
       <Typography variant="h3" gutterBottom>
-        History
+        ประวัติสินค้า
       </Typography>
       <Box
         sx={{ display: "flex", gap: 2, alignItems: "center", marginBottom: 2 }}

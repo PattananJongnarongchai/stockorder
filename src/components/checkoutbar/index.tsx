@@ -93,7 +93,7 @@ export const CheckoutBar: React.FC<CheckoutBarProps> = ({
       >
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Cart Items
+            ตะกร้าสินค้า
           </Typography>
           <List dense>
             {cartItems.length > 0 ? (
@@ -130,19 +130,26 @@ export const CheckoutBar: React.FC<CheckoutBarProps> = ({
         </CardContent>
         <Box sx={{ padding: 2 }}>
           <Typography variant="body1">
-            Subtotal: ${subtotal.toFixed(2)}
+            ราคาสินค้า: ${subtotal.toFixed(2)}
           </Typography>
           <Typography variant="body1">
-            Tax ({taxRate}%): ${taxAmount.toFixed(2)}
+            ภาษี ({taxRate}%): ${taxAmount.toFixed(2)}
           </Typography>
-          <Typography variant="h6">Total: ${finalTotal.toFixed(2)}</Typography>
+          <Typography variant="h6">
+            ราคาสุทธิ: ${finalTotal.toFixed(2)}
+          </Typography>
           <Button
             variant="contained"
             color="primary"
-            sx={{ mt: 2, width: "100%" }}
+            sx={{
+              mt: 2,
+              width: "100%",
+              backgroundColor: "green",
+              "&:hover": { backgroundColor: "darkgreen" },
+            }}
             onClick={handleCheckout}
           >
-            Checkout
+            ชำระเงิน
           </Button>
         </Box>
       </Card>
