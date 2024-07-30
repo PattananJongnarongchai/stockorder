@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
+import BadgeIcon from "@mui/icons-material/Badge";
 import HistoryIcon from "@mui/icons-material/History";
 import { useRouter } from "next/router";
 import AuthContext from "../../contexts/AuthContext";
@@ -66,6 +67,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <HistoryIcon />
           </ListItemIcon>
           <ListItemText primary="ประวัติสินค้า" />
+        </ListItem>
+        <ListSubheader component="div" id="nested-list-subheader">
+          User Management
+        </ListSubheader>
+        <ListItem button onClick={() => handleNavigation("/employees")}>
+          <ListItemIcon>
+            <BadgeIcon />
+          </ListItemIcon>
+          <ListItemText primary="ข้อมูลพนักงาน" />
         </ListItem>
       </List>
     </Drawer>
