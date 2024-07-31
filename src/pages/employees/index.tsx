@@ -1,5 +1,4 @@
-// pages/employees.tsx
-
+import { useState, useEffect } from "react";
 import {
   Grid,
   Card,
@@ -11,47 +10,22 @@ import {
 import { useRouter } from "next/router";
 import styles from "@/styles/EmployeeList.module.css";
 
-const employees = [
-  {
-    id: 1,
-    name: "John Doe",
-    position: "Software Engineer",
-    imageUrl:
-      "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    position: "Product Manager",
-    imageUrl:
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg",
-  },
-  {
-    id: 3,
-    name: "Alice Johnson",
-    position: "UX Designer",
-    imageUrl:
-      "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg",
-  },
-  {
-    id: 4,
-    name: "Bob Brown",
-    position: "DevOps Engineer",
-    imageUrl:
-      "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg",
-  },
-  {
-    id: 5,
-    name: "Charlie Black",
-    position: "Data Scientist",
-    imageUrl:
-      "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg",
-  },
-  // Add more employees as needed
-];
+interface Employee {
+  id: number;
+  username: string;
+  role: string;
+}
 
 const EmployeeList = () => {
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const router = useRouter();
+
+  useEffect(() => {
+    fetch("http://localhost:3001/api/users")
+      .then((response) => response.json())
+      .then((data) => setEmployees(data))
+      .catch((error) => console.error("Error fetching users:", error));
+  }, []);
 
   const handleCardClick = (id: number) => {
     router.push(`/employees/${id}`);
@@ -67,15 +41,15 @@ const EmployeeList = () => {
                 <CardMedia
                   component="img"
                   className={styles.media}
-                  image={employee.imageUrl}
-                  alt={employee.name}
+                  image="https://via.placeholder.com/150"
+                  alt={employee.username}
                 />
                 <CardContent>
                   <Typography variant="h5" component="div">
-                    {employee.name}
+                    {employee.username}
                   </Typography>
                   <Typography color="text.secondary">
-                    {employee.position}
+                    {employee.role}
                   </Typography>
                 </CardContent>
               </CardActionArea>
